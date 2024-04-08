@@ -5,6 +5,8 @@
 # 
 # Date Created: Sun Mar 17 01:25:17 EDT 2024
 # 
+# Last Modified: Mon Apr 8 15:49:01 EDT 2024
+#
 
 import sys
 import random
@@ -37,12 +39,61 @@ def showRules() -> None:
     print(rules)
     return
 
+
+def throwDice(dice_count: int) -> int:
+    '''
+    Function that allows the user or house to roll their die
+    '''
+    return sum(random.randint(1,6) for i in range(dice_count))
+
+
 def playGame():
-    ...
 
+    user_total = 0
+    house_total = 0
 
-def takeTurn(turn: int, player: str = "house") -> dict:
-    ...
+    while True:
+        # The user takes their turn
+        print("Rolling dice ...")
+        if user_total < 14:
+            user_total += throwDice(2)
+        else:
+            user_total += throwDice(1)
+        print(f"Your Total: {user_total}\n")
+
+        if user_total > 21:
+            status = "bust"
+            print(f"You {status}, House wins.\n")
+            return "house"
+        elif user_total == 21:
+            status = "win"
+            print(f"You {status}!\n")
+            return "user"
+        
+        # The house takes it's turn
+        print("Rolling dice ...")
+        if house_total < 17:
+            if house_total < 14:
+                house_total += throwDice(2)
+            else:
+                house_total += throwDice(1)
+            print(f"House total: {house_total}\n")
+        else:
+            print("House stays.\n")
+        
+        if house_total > 21:
+            print("House busts ... you win!\n")
+            return "user"
+        elif house_total >= 17:
+            if user_total > house_total:
+                print("You win!\n")
+                return "user"
+            elif user_total < house_total:
+                print("You lose!\n")
+                return "house"
+            else:
+                print(f"It's a tie!\n")
+                return "tie"    
 
 
 def main() -> None:
@@ -75,8 +126,10 @@ def main() -> None:
                     if choice == 1:
                         showRules()
                     elif choice == 2:
-                        playGame()
+                        victor = playGame()
+                        print(f"{victor.title()} wins this round!")
                     elif choice == 3:
+                        print("Goodbye ...")
                         sys.exit()          
                 else:
                     print(f"Error ... {choice} is not an integer in the range 1 - 3\n")
